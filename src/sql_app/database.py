@@ -18,6 +18,11 @@ Base = declarative_base()
 
 @contextmanager
 def get_db_conxt() -> Session:
+    """
+    Simple context manager
+
+    :return: Session
+    """
     db = SessionLocal()
     try:
         yield db
@@ -26,6 +31,10 @@ def get_db_conxt() -> Session:
 
 
 def get_db() -> Session:
+    """
+    Generator for fastapi connection
+    :return: Generator[Session]
+    """
     db = SessionLocal()
     try:
         yield db

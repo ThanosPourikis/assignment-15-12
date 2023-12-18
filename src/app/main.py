@@ -42,29 +42,37 @@ async def read_root():
 async def inference(
     request: Request, file: UploadFile, db: Session = Depends(get_db)
 ) -> schemas.SongResponse:
-    requsest_id = str(uuid4())
-    logger.info(f"Request received {requsest_id}")
+    """
+    Produce Model inference
+    :param request: Request
+    :param file: Uploaded file
+    :param db: db connection
+    :return: HttpResponse
+    """
+    request_id = str(uuid4())
+    logger.info(f"Request received {request_id}")
     if int(request.headers.get("content-length")) >= 10 * 1024 * 1024:
         # more than 10 MB
         # But should be handled at frontend
-        logger.info(f"Request:{requsest_id} returned 413")
+        logger.info(f"Request:{request_id} returned 413")
         raise HTTPException(status_code=413)
     if file.content_type != "audio/mpeg":
         # Check file format
-        logger.info(f"Request:{requsest_id} returned 415")
+        logger.info(f"Request:{request_id} returned 415")
         raise HTTPException(status_code=415)
 
     song_hash = md5(file.file.read()).hexdigest()
 
     # Search db for previous inference
-    result = await search_song(db, song_hash, GENRES, requsest_id, logger)
+    result = await search_song(db, song_hash, GENRES, request_id, logger)
     if result:
-        logger.info(f"Request:{requsest_id} returned cashed result")
+        logger.info(f"Request:{request_id} returned cashed result")
         return result
 
-    response = await model.predict(file, requsest_id, logger)
-    await post_inference(db, response, song_hash, model.version)
-    logger.info(f"Request:{requsest_id} Uploaded to DB")
+    response = await model.predict(file, request_id, logger)
+    await post_inference(
+        db, response, song_hash, model.version, request_id, logger
+    )
     response["genre"] = GENRES[response["genre"]]
-    logger.info(f"Request:{requsest_id} returned cashed result")
+    logger.info(f"Request:{request_id} returning prediction")
     return response

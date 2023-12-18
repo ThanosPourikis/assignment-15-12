@@ -10,8 +10,22 @@ from sql_app import models as models, schemas
 
 
 async def post_inference(
-    db: Session, response: Dict, song_hash: str, model_version: str
+    db: Session,
+    response: Dict,
+    song_hash: str,
+    model_version: str,
+    request_id: str,
+    logger: Logger,
 ):
+    """
+    Post model result to DB
+    :param db: Database Session
+    :param response: Model prediction
+    :param song_hash: hash of song
+    :param model_version: version of model
+    :param request_id: Request Id
+    :param logger: Project logger
+    """
     if os.environ.get("DISABLE_DB", False):
         return 0
     result = (
@@ -32,6 +46,7 @@ async def post_inference(
         )
         db.add(song_inference)
         db.commit()
+    logger.info(f"Request:{request_id} Uploaded to DB")
 
 
 async def search_song(
@@ -41,13 +56,14 @@ async def search_song(
     request_id: str,
     logger: Logger,
 ) -> schemas.SongResponse | None:
-    """Search db for previous inference
-    Parameters:
-            db: Database Session
-            song_hash: hash of song
-            genres: Genre Mapper
-            request_id: Request Id
-            logger: Project logger
+    """
+    Search db for previous inference
+    :param db: Database Session
+    :param song_hash: hash of song
+    :param genres: Genre Mapper
+    :param request_id: Request Id
+    :param logger: Project logger
+    :return: SongResponse
     """
     if os.environ.get("DISABLE_DB", False):
         return None

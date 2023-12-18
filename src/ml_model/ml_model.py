@@ -22,12 +22,10 @@ class MlModel:
         """
         Simulate Model prediction
 
-        Parameters:
-            request_id: Request Id
-            logger: Project logger
+            :param request_id: Request Id
+            :param logger: Project logger
 
-        Return:
-            Prediction
+            :return: Prediction
         """
         # Simulate Compute
         logger.info(f"Computing {request_id} result")

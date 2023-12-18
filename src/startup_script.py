@@ -53,6 +53,8 @@ def main():
     print("Generated Fake models")
 
     database.Base.metadata.create_all(bind=engine)
+
+    # Populate Genres Table
     with get_db_conxt() as db:
         for i in genres:
             db.add(
@@ -77,7 +79,6 @@ def main():
             db.commit()
         except Exception as e:
             print(e)
-    # Populate Genres Table
 
 
 if __name__ == "__main__":
