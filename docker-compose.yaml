@@ -1,0 +1,22 @@
+services:
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yaml'
+    ports:
+      - 9090:9090
+    restart: unless-stopped
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - prom_data:/prometheus
+  app:
+    image: thanospourikis/assignment-15-12
+    command: bash -c "startup -f /code/data && 
+      export DATA_FOLDER=/code/data &&  
+      export DISABLE_DB=True &&
+      uvicorn src.app.main:app --log-config=conf/log_conf.yaml --host=0.0.0.0 --port=8000"
+    ports:
+      - 8000:8000
+volumes:
+  prom_data:

@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "assingment"
+description = "Assingment for orfium"
+readme = "README.md"
+requires-python = ">=3.12"
+version = "0.0.1"
+authors = [
+    { name = "Athanasios Pourikis", email = "thanos.pourikis@gmail.com" },
+]
+dependencies = [
+    'fastapi==0.105.0',
+    'uvicorn[standard]==0.24.0.post1',
+    'python-multipart==0.0.6',
+    'SQLAlchemy==2.0.23',
+    'prometheus-fastapi-instrumentator==6.1.0'
+]
+
+[project.optional-dependencies]
+all = [
+    'pytest==7.4.3',
+    'httpx==0.25.2',
+    'coverage==7.3.3',
+    'pre-commit==3.6.0'
+]
+
+[tool.pytest.ini_options]
+pythonpath = [
+  "src"
+]
+
+[project.scripts]
+startup = "startup_script:main"
+
+[tool.black]
+line-length = 79
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
